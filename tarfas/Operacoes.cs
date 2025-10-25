@@ -35,7 +35,7 @@ public class Operacoes
         var tarefas = new List<Tarefa>();
         using(var conexao = new MySqlConnection(connectionString))
         {            
-            var sql = "SELECT id, nome, descricao, dataCriacao, dataExecucao, status FROM `tarefa`";
+            var sql = "SELECT id, nome, descricao, dataCriacao, dataExecucao, status FROM tarefa";
             conexao.Open();
 
             using (var cmd = new MySqlCommand(sql, conexao))
@@ -66,11 +66,41 @@ public class Operacoes
 
     public void Alterar(Tarefa tarefa)
     {
+        using (var conexao = new MySqlConnection(connectionString))
+        {
+            conexao.Open();
+            var sql = @"UPDATE tarefa 
+                        SET nome = @nome,
+                            descricao = @descricao,
+                            dataExecucao = @dataExecucao,
+                            status = @status
+                        WHERE id = @id";
 
+            using (var cmd = new MySqlCommand(sql, conexao))
+            {
+                cmd.Parameters.AddWithValue("@id", tarefa.Id);
+                cmd.Parameters.AddWithValue("@nome", tarefa.Nome);
+                cmd.Parameters.AddWithValue("@descricao", tarefa.Descricao);
+                cmd.Parameters.AddWithValue("@dataExecucao", tarefa.DataExecucao);
+                cmd.Parameters.AddWithValue("@status", tarefa.Status);
+
+                cmd.ExecuteNonQuery();
+            }
+        }
     }
 
     public void Excluir(int id)
     {
+        using (var conexao = new MySqlConnection(connectionString))
+        {
+            conexao.Open();
+            var sql = "DELETE FROM tarefa WHERE id = @id";
 
+            using (var cmd = new MySqlCommand(sql, conexao))
+            {
+                cmd.Parameters.AddWithValue("@id", id);
+                cmd.ExecuteNonQuery();
+            }
+        }
     }
 }
